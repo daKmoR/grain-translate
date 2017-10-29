@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+  <title>grain-translate demo</title>
+
+  <!-- <script src="../../webcomponentsjs/webcomponents-lite.js"></script> -->
+
+  <script src="../../i18next/i18next.min.js"></script>
+  <script src="../../i18next-xhr-backend/i18nextXHRBackend.min.js"></script>
+  <script src="../../i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>
+
+  <script type="module" src="./grain-translate-example.js"></script>
+
+</head>
+<body>
+<div class="vertical-section-container centered">
+  <h3>Basic grain-translate-example demo</h3>
+
+  <grain-translate-example></grain-translate-example>
+  <button onclick="i18next.changeLanguage('de');">Change to German</button>
+  <button onclick="i18next.changeLanguage('en');">Change to English</button>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "name": "grain-translate",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "i18next": "^10.0.3",
+    "i18next-browser-languagedetector": "^2.0.0",
+    "i18next-xhr-backend": "^1.4.3"
+  },
+  "devDependencies": {
+    "grain-lit-element": "0.0.5"
+  },
+  "scripts": {
+    "start": "polymer serve --npm",
+    "test": "polymer test --skip-selenium-install",
+    "lint": "eslint *.js && polymer lint -i *.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
