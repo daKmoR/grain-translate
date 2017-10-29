@@ -2,11 +2,10 @@ import GrainLitElement, { html } from '../../grain-lit-element/GrainLitElement.j
 import GrainTranslate from '../GrainTranslate.js';
 
 export default class GrainTranslateExample extends GrainTranslate(GrainLitElement(HTMLElement)) {
-
   static get translateDefaults() {
     return {
-      defaultNS: ['grain-translate']
-    }
+      defaultNS: ['grain-translate'],
+    };
   }
 
   render() {

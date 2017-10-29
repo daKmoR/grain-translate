@@ -21,7 +21,7 @@ if (i18next && typeof i18next.isInitialized === 'undefined') {
       },
       backend: {
         loadPath: '../../{{ns}}/assets/translations/{{lng}}.json',
-      }
+      },
     });
 }
 
@@ -35,11 +35,11 @@ const GrainTranslate = superclass => class extends superclass {
       this.localI18next.changeLanguage(lng);
     });
     this.localI18next = i18next.cloneInstance();
-    this.localI18next.on('languageChanged', (lng) => {
+    this.localI18next.on('languageChanged', () => {
       this.update();
     });
 
-    let defaults = this.constructor.translateDefaults;
+    const defaults = this.constructor.translateDefaults;
     if (typeof defaults.defaultNS === 'undefined') {
       defaults.defaultNS = this.localName;
     }
@@ -53,21 +53,20 @@ const GrainTranslate = superclass => class extends superclass {
   }
 
   t(key, options) {
+    let useKey = key;
     // prefix defaultNS manually because of bug
     // https://github.com/i18next/i18next/issues/979
-    if (typeof this.constructor.translateDefaults.defaultNS !== 'undefined' && key.indexOf(':') === -1) {
-      key = this.constructor.translateDefaults.defaultNS + ':' + key;
+    if (typeof this.constructor.translateDefaults.defaultNS !== 'undefined' && useKey.indexOf(':') === -1) {
+      useKey = `${this.constructor.translateDefaults.defaultNS}:${useKey}`;
     }
     if (this.localI18next && typeof this.localI18next.isInitialized === 'undefined') {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         this.localI18next.on('initialized', () => {
-          resolve(this.localI18next.t(key, options));
+          resolve(this.localI18next.t(useKey, options));
         });
       });
-
-    } else {
-      return this.localI18next.t(key, options);
     }
+    return this.localI18next.t(useKey, options);
   }
 };
 

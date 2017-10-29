@@ -4,7 +4,7 @@ module.exports = {
     "browser": true
   },
   "globals": {
-    "ShadyCSS": false
+    "i18next": false
   },
   "rules": {
     "no-console": ["error", {
