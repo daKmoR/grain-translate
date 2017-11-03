@@ -8,11 +8,12 @@
 
   <!-- <script src="../../webcomponentsjs/webcomponents-lite.js"></script> -->
 
-  <script src="../../i18next/i18next.min.js"></script>
-  <script src="../../i18next-xhr-backend/i18nextXHRBackend.min.js"></script>
-  <script src="../../i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>
-
   <script type="module" src="./grain-translate-example.js"></script>
+
+  <script type="module">
+    import i18next from '../../i18next/dist/es/i18next.js';
+    window.i18next= i18next; // expose i18next globally
+  </script>
 
 </head>
 <body>
