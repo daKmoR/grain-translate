@@ -1,17 +1,11 @@
-if (!window.i18next) {
-  console.error('You have to load globally <script src="./node_modules/i18next/i18next.min.js"></script>');
-}
-if (!window.i18nextXHRBackend) {
-  console.error('You have to load globally <script src="./node_modules/i18next-xhr-backend/i18nextXHRBackend.min.js"></script>');
-}
-if (!window.i18nextBrowserLanguageDetector) {
-  console.error('You have to load globally <script src="./node_modules/i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>');
-}
+import i18next from '../i18next/dist/es/i18next.js';
+import i18nextXHRBackend from '../i18next-xhr-backend/dist/es/index.js';
+import i18nextBrowserLanguageDetector from '../i18next-browser-languageDetector/dist/es/index.js';
 
 if (i18next && typeof i18next.isInitialized === 'undefined') {
   i18next
-    .use(window.i18nextXHRBackend)
-    .use(window.i18nextBrowserLanguageDetector)
+    .use(i18nextXHRBackend)
+    .use(i18nextBrowserLanguageDetector)
     .init({
       fallbackLng: 'en',
       debug: false,
@@ -36,15 +30,12 @@ const GrainTranslate = superclass => class extends superclass {
     });
 
     const defaults = this.constructor.translateDefaults;
-    if (typeof defaults.defaultNS === 'undefined') {
-      defaults.defaultNS = this.localName;
-    }
+    defaults.defaultNS = typeof defaults.defaultNS === 'undefined' ? this.localName : defaults.defaultNS;
+    defaults.ns = typeof defaults.ns === 'undefined' ? defaults.defaultNS : defaults.ns;
     this.localI18next = i18next.cloneInstance(defaults);
     this.localI18next.on('languageChanged', () => {
       this.update();
     });
-
-    this.localI18next.loadNamespaces(defaults.defaultNS);
   }
 
   connectedCallback() {
