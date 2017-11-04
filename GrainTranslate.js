@@ -2,57 +2,42 @@ import i18next from '../i18next/dist/es/i18next.js';
 import i18nextXHRBackend from '../i18next-xhr-backend/dist/es/index.js';
 import i18nextBrowserLanguageDetector from '../i18next-browser-languageDetector/dist/es/index.js';
 
-if (i18next && typeof i18next.isInitialized === 'undefined') {
-  i18next
-    .use(i18nextXHRBackend)
-    .use(i18nextBrowserLanguageDetector)
-    .init({
-      fallbackLng: 'en',
-      debug: false,
-      ns: [],
-      detection: {
-        order: ['querystring', 'cookie', 'localStorage', 'htmlTag', 'navigator'],
-      },
-      backend: {
-        loadPath: '../../{{ns}}/assets/translations/{{lng}}.json',
-      },
-    });
-}
+window.grainTranslate = null;
 
-/* @polymerMixin */
-const GrainTranslate = superclass => class extends superclass {
-  static get translateDefaults() { return {}; }
+export default class GrainTranslate {
 
   constructor() {
-    super();
-    i18next.on('languageChanged', (lng) => {
-      this.localI18next.changeLanguage(lng);
-    });
-
-    const defaults = this.constructor.translateDefaults;
-    defaults.defaultNS = typeof defaults.defaultNS === 'undefined' ? this.localName : defaults.defaultNS;
-    defaults.ns = typeof defaults.ns === 'undefined' ? defaults.defaultNS : defaults.ns;
-    this.localI18next = i18next.cloneInstance(defaults);
-    this.localI18next.on('languageChanged', () => {
-      this.update();
-    });
-  }
-
-  connectedCallback() {
-    this.manualFirstRender = true;
-    super.connectedCallback();
-  }
-
-  t(key, options) {
-    if (this.localI18next && typeof this.localI18next.isInitialized === 'undefined') {
-      return new Promise((resolve) => {
-        this.localI18next.on('initialized', () => {
-          resolve(this.localI18next.t(key, options));
-        });
-      });
+    if (window.grainTranslate) {
+      return window.grainTranslate;
     }
-    return this.localI18next.t(key, options);
-  }
-};
+    
+    this.proxy = i18next;
+    this.proxy
+      .use(i18nextXHRBackend)
+      .use(i18nextBrowserLanguageDetector)
+      .init({
+        fallbackLng: 'en',
+        debug: true,
+        ns: [],
+        detection: {
+          order: ['querystring', 'cookie', 'localStorage', 'htmlTag', 'navigator'],
+        },
+        backend: {
+          loadPath: function(lngs, namespaces) {
+            for (let i=0; i<namespaces.length; i++) {
+              if (namespaces[i] === 'translations' || namespaces[i].indexOf('local-') === 0) {
+                return './assets/{{ns}}/{{lng}}.json';
+              }
+            }
+            return '/node_modules/{{ns}}/assets/translations/{{lng}}.json';
+          }.bind(this)
+        }
+      });
 
-export default GrainTranslate;
+    window.grainTranslate = this;
+  }
+
+  changeLanguage(lng) {
+    this.proxy.changeLanguage(lng);
+  }
+}
