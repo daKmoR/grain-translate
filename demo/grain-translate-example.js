@@ -4,7 +4,7 @@ import GrainTranslateMixin from '../GrainTranslateMixin.js';
 export default class GrainTranslateExample extends GrainTranslateMixin(GrainLitElement(HTMLElement)) {
   static get translateDefaults() {
     return {
-      defaultNS: ['grain-translate'],
+      namespace: 'grain-translate',
     };
   }
 

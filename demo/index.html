@@ -10,19 +10,14 @@
 
   <script type="module" src="./grain-translate-example.js"></script>
 
-  <script type="module">
-    import i18next from '../../i18next/dist/es/i18next.js';
-    window.i18next= i18next; // expose i18next globally
-  </script>
-
 </head>
 <body>
 <div class="vertical-section-container centered">
   <h3>Basic grain-translate-example demo</h3>
 
   <grain-translate-example></grain-translate-example>
-  <button onclick="i18next.changeLanguage('de');">Change to German</button>
-  <button onclick="i18next.changeLanguage('en');">Change to English</button>
+  <button onclick="grainTranslate.changeLanguage('de');">Change to German</button>
+  <button onclick="grainTranslate.changeLanguage('en');">Change to English</button>
 
 </div>
 </body>

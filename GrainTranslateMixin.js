@@ -2,33 +2,61 @@ import GrainTranslate from './GrainTranslate.js';
 
 /* @polymerMixin */
 const GrainTranslateMixin = superclass => class extends superclass {
-  static get translateDefaults() { return {
-      'manualInit': false
-    };
-  }
+  static get translateDefaults() { return {}; }
 
   constructor() {
     super();
     this.grainTranslate = new GrainTranslate();
 
-    const defaults = this.constructor.translateDefaults;
-    defaults.defaultNS = typeof defaults.defaultNS === 'undefined' ? this.localName : defaults.defaultNS;
+    this._translate = Object.assign({
+      namespace: this.localName,
+      loaded: false,
+      loadNamespaces: []
+    }, this.constructor.translateDefaults);
 
-    this.grainTranslate.proxy.on('languageChanged', () => {
-      this.update();
+    if (!this._translate.loadNamespaces.includes(this._translate.namespace)) {
+      this._translate.loadNamespaces.push(this._translate.namespace);
+    }
+
+    this._translate.language = String(this.grainTranslate.language);
+
+    this.grainTranslate.proxy.on('languageChanged', (lng) => {
+      if (this._translate.loaded && lng !== this._translate.language) {
+        this._translate.language = lng;
+        this.update();
+      }
     });
-    this.grainTranslate.proxy.loadNamespaces(defaults.defaultNS);
 
-    this.t = this.grainTranslate.proxy.getFixedT(null, defaults.defaultNS);
+    this.grainTranslate.proxy.on('loaded', (loaded) => {
+      if (this._translate.loaded === false) {
+        let loadedNamespaces = loaded[this.grainTranslate.language];
+        if (this._translate.loadNamespaces.every((val) => loadedNamespaces.includes(val))) {
+          this._translate.loaded = true;
+          this.update();
+        }
+      }
+    });
+
+    if (this._translate.loadNamespaces.every((val) => this.grainTranslate.proxy.hasResourceBundle(this.grainTranslate.language, val))) {
+      this._translate.loaded = true;
+    }
+
+    this.grainTranslate.loadNamespaces(this._translate.loadNamespaces);
+
+    this.t = this.grainTranslate.proxy.getFixedT(null, this._translate.namespace);
   }
 
-  // connectedCallback() {
-  //   // if (this.grainTranslate.proxy && typeof this.grainTranslate.proxy.isInitialized === 'undefined') {
-  //     // this.manualFirstRender = true;
-  //   // }
-  //   // this.manualFirstRender = true;
-  //   super.connectedCallback();
-  // }
+  forceLanguage(lng) {
+    this.t = this.grainTranslate.proxy.getFixedT(lng, this._translate.namespace);
+    this.update();
+  }
+
+  connectedCallback() {
+    if (this._translate.loaded === false) {
+      this.manualFirstRender = true;
+    }
+    super.connectedCallback();
+  }
 
   // t(key, options) {
   //   if (this.grainTranslate.proxy && typeof this.grainTranslate.proxy.isInitialized === 'undefined') {
