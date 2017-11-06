@@ -4,6 +4,20 @@ import GrainTranslate from './GrainTranslate.js';
 const GrainTranslateMixin = superclass => class extends superclass {
   static get translateDefaults() { return {}; }
 
+  static overrideTranslateDefaults(properties) {
+    this._overrideTranslateValues = properties;
+  }
+
+  supportOverrideTranslateDefaults(properties) {
+    const result = properties;
+    if (typeof this.constructor._overrideTranslateValues === 'object') {
+      Object.keys(this.constructor._overrideTranslateValues).forEach((property) => {
+        result[property] = this.constructor._overrideTranslateValues[property];
+      });
+    }
+    return result;
+  }
+
   constructor() {
     super();
     this.grainTranslate = new GrainTranslate();
@@ -12,7 +26,7 @@ const GrainTranslateMixin = superclass => class extends superclass {
       namespace: this.localName,
       loaded: false,
       loadNamespaces: []
-    }, this.constructor.translateDefaults);
+    }, this.supportOverrideTranslateDefaults(this.constructor.translateDefaults));
 
     if (!this._translate.loadNamespaces.includes(this._translate.namespace)) {
       this._translate.loadNamespaces.push(this._translate.namespace);
