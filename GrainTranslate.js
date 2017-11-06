@@ -22,7 +22,7 @@ export default class GrainTranslate {
         loadPath: function(lngs, namespaces) {
           for (let i=0; i < namespaces.length; i++) {
             if (namespaces[i] === 'translations' || namespaces[i].indexOf('local-') === 0) {
-              return './assets/{{ns}}/{{lng}}.json';
+              return '/assets/{{ns}}/{{lng}}.json';
             }
           }
           return '/node_modules/{{ns}}/assets/translations/{{lng}}.json';
