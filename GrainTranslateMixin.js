@@ -30,7 +30,7 @@ const GrainTranslateMixin = superclass => class extends superclass {
     this.grainTranslate.proxy.on('loaded', (loaded) => {
       if (this._translate.loaded === false) {
         let loadedNamespaces = loaded[this.grainTranslate.language];
-        if (this._translate.loadNamespaces.every((val) => loadedNamespaces.includes(val))) {
+        if (loadedNamespaces && this._translate.loadNamespaces.every((val) => loadedNamespaces.includes(val))) {
           this._translate.loaded = true;
           this.update();
         }
