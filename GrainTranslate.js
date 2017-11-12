@@ -4,6 +4,26 @@ import i18nextBrowserLanguageDetector from '../i18next-browser-languageDetector/
 
 window.grainTranslate = null;
 
+let IntlPostProcessor = {
+  type: 'postProcessor',
+  name: 'intl',
+  process: function(value, key, options, translator) {
+    if (value.indexOf('{') !== -1 && value.indexOf('{{') === -1) {
+      let intlObject = new IntlMessageFormat(value, translator.language);
+      return intlObject.format(options);
+    }
+    return value;
+  }
+};
+
+/**
+ * If you want to always support Intl Api you can do
+ *
+ * new GrainTranslate({
+ *   postProcess: ['intl']
+ * });
+ *
+ */
 export default class GrainTranslate {
 
   constructor(options) {
@@ -34,6 +54,7 @@ export default class GrainTranslate {
     this.proxy
       .use(i18nextXHRBackend)
       .use(i18nextBrowserLanguageDetector)
+      .use(IntlPostProcessor)
       .init(this.proxyOptions);
 
     window.grainTranslate = this;
