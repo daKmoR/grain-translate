@@ -1,6 +1,6 @@
-import i18next from '../i18next/dist/es/i18next.js';
-import i18nextXHRBackend from '../i18next-xhr-backend/dist/es/index.js';
-import i18nextBrowserLanguageDetector from '../i18next-browser-languageDetector/dist/es/index.js';
+import i18next from './external-imports/i18next.js';
+import i18nextXHRBackend from './external-imports/i18next-xhr-backend.js';
+import i18nextBrowserLanguageDetector from './external-imports/i18next-browser-languageDetector.js';
 
 window.grainTranslate = null;
 

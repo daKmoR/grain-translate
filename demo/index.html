@@ -8,11 +8,12 @@
 
   <!-- <script src="../../webcomponentsjs/webcomponents-lite.js"></script> -->
 
-  <script type="module" src="./grain-translate-example.js"></script>
-  <script>
-    LionTranslateExample.overrideTranslateDefaults({
+  <script type="module">
+    import GrainTranslateExample from './grain-translate-example.js';
+    GrainTranslateExample.overrideTranslateDefaults({
       namespace: 'translations'
     });
+    customElements.define('grain-translate-example', GrainTranslateExample);
   </script>
 
 </head>
