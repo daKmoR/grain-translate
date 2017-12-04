@@ -12,7 +12,7 @@
     "i18next-xhr-backend": "^1.5.0"
   },
   "devDependencies": {
-    "grain-lit-element": "0.0.5"
+    "grain-lit-element": "github:daKmoR/grain-lit-element"
   },
   "scripts": {
     "start": "polymer serve --npm",
