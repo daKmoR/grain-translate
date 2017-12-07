@@ -1,11 +1,24 @@
 import GrainTranslate from './GrainTranslate.js';
 
 /* @polymerMixin */
+// eslint-disable-next-line no-unused-vars
 const GrainTranslateMixin = superclass => class extends superclass {
   static get translateDefaults() { return {}; }
 
   static overrideTranslateDefaults(properties) {
     this._overrideTranslateValues = properties;
+  }
+
+  set language(language) {
+    this.grainTranslate.loadLanguages(language, () => {
+      this._translate.language = language;
+      this.t = this.grainTranslate.proxy.getFixedT(language, this._translate.namespace);
+      this.update();
+    });
+  }
+
+  get language() {
+    return this._translate.language;
   }
 
   supportOverrideTranslateDefaults(properties) {
@@ -25,63 +38,51 @@ const GrainTranslateMixin = superclass => class extends superclass {
     this._translate = Object.assign({
       namespace: this.localName,
       loaded: false,
-      loadNamespaces: []
+      loadNamespaces: [],
     }, this.supportOverrideTranslateDefaults(this.constructor.translateDefaults));
 
     if (!this._translate.loadNamespaces.includes(this._translate.namespace)) {
       this._translate.loadNamespaces.push(this._translate.namespace);
     }
 
-    this._translate.language = String(this.grainTranslate.language);
+    this.language = String(this.grainTranslate.language);
 
-    this.grainTranslate.proxy.on('languageChanged', (lng) => {
-      if (this._translate.loaded && lng !== this._translate.language) {
-        this._translate.language = lng;
-        this.update();
-      }
-    });
-
-    this.grainTranslate.proxy.on('loaded', (loaded) => {
-      if (this._translate.loaded === false) {
-        let loadedNamespaces = loaded[this.grainTranslate.language];
-        if (loadedNamespaces && this._translate.loadNamespaces.every((val) => loadedNamespaces.includes(val))) {
-          this._translate.loaded = true;
-          this.update();
-        }
-      }
-    });
-
-    if (this._translate.loadNamespaces.every((val) => this.grainTranslate.proxy.hasResourceBundle(this.grainTranslate.language, val))) {
+    // check if resource bundle exists, i.e every namespace has the language resource.
+    // If yes, set the loaded to true
+    if (this._translate.loadNamespaces.every(val =>
+      this.grainTranslate.proxy.hasResourceBundle(this.grainTranslate.language, val))) {
       this._translate.loaded = true;
     }
 
     this.grainTranslate.loadNamespaces(this._translate.loadNamespaces);
 
-    this.t = this.grainTranslate.proxy.getFixedT(null, this._translate.namespace);
+    this.registerEvents();
   }
 
-  forceLanguage(lng) {
-    this.t = this.grainTranslate.proxy.getFixedT(lng, this._translate.namespace);
-    this.update();
+  registerEvents() {
+    this.grainTranslate.proxy.on('languageChanged', (language) => {
+      if (this._translate.loaded && (language !== this.language)) {
+        this.language = language;
+      }
+    });
+
+    this.grainTranslate.proxy.on('loaded', (loaded) => {
+      if (this._translate.loaded === false) {
+        const loadedNamespaces = loaded[this.grainTranslate.language];
+        if (loadedNamespaces && this._translate.loadNamespaces.every(val =>
+          loadedNamespaces.includes(val))) {
+          this._translate.loaded = true;
+          this.update();
+        }
+      }
+    });
   }
 
-  connectedCallback() {
-    if (this._translate.loaded === false) {
-      this.manualFirstRender = true;
+  connectedUpdate() {
+    if (this._translate.loaded === true) {
+      super.connectedUpdate();
     }
-    super.connectedCallback();
   }
-
-  // t(key, options) {
-  //   if (this.grainTranslate.proxy && typeof this.grainTranslate.proxy.isInitialized === 'undefined') {
-  //     return new Promise((resolve) => {
-  //       this.grainTranslate.proxy.on('initialized', () => {
-  //         resolve(this.grainTranslate.proxy.t(key, options));
-  //       });
-  //     });
-  //   }
-  //   return this.grainTranslate.proxy.t(key, options);
-  // }
 };
 
 export default GrainTranslateMixin;
