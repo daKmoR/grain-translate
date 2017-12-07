@@ -19,12 +19,24 @@
 </head>
 <body>
 <div class="vertical-section-container centered">
-  <h3>Basic grain-translate-example demo</h3>
+	<demo-snippet>
+		<template>
+			<grain-translate-example></grain-translate-example>
+			<button onclick="Grain.translate.language = 'de';">Change to German</button>
+			<button onclick="Grain.translate.language = 'en';">Change to English</button>
+		</template>
+	</demo-snippet>
 
-  <grain-translate-example></grain-translate-example>
-  <button onclick="grainTranslate.changeLanguage('de');">Change to German</button>
-  <button onclick="grainTranslate.changeLanguage('en');">Change to English</button>
-
+	<h3>Component specific translation demo</h3>
+	<demo-snippet>
+		<template>
+			<grain-translate-example id="specificTranslation"></grain-translate-example>
+			<button onclick="document.querySelector('#specificTranslation').language = 'de';">Change
+				this component to German</button>
+			<button onclick="document.querySelector('#specificTranslation').language = 'en';">Change
+				this component to English</button>
+		</template>
+	</demo-snippet>
 </div>
 </body>
 </html>
