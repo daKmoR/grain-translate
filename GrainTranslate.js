@@ -2,18 +2,20 @@ import i18next from '../i18next/dist/es/i18next.js';
 import i18nextXHRBackend from '../i18next-xhr-backend/dist/es/index.js';
 import i18nextBrowserLanguageDetector from '../i18next-browser-languagedetector/dist/es/index.js';
 
-window.grainTranslate = null;
+window.Grain = window.Grain || {};
+window.Grain.translate = null;
 
-let IntlPostProcessor = {
+/* global IntlMessageFormat */
+const IntlPostProcessor = {
   type: 'postProcessor',
   name: 'intl',
-  process: function(value, key, options, translator) {
+  process: (value, key, options, translator) => {
     if (value.indexOf('{') !== -1 && value.indexOf('{{') === -1) {
-      let intlObject = new IntlMessageFormat(value, translator.language);
+      const intlObject = new IntlMessageFormat(value, translator.language);
       return intlObject.format(options);
     }
     return value;
-  }
+  },
 };
 
 /**
@@ -23,12 +25,11 @@ let IntlPostProcessor = {
  *   postProcess: ['intl']
  * });
  *
- */
-export default class GrainTranslate {
-
+ */ // eslint-disable-next-line no-unused-vars
+class GrainTranslate {
   constructor(options) {
-    if (window.grainTranslate) {
-      return window.grainTranslate;
+    if (window.Grain.translate) {
+      return window.Grain.translate;
     }
 
     this.proxyOptions = Object.assign({
@@ -39,15 +40,15 @@ export default class GrainTranslate {
         order: ['querystring', 'cookie', 'localStorage', 'htmlTag', 'navigator'],
       },
       backend: {
-        loadPath: function(lngs, namespaces) {
-          for (let i=0; i < namespaces.length; i++) {
+        loadPath: (languages, namespaces) => {
+          for (let i = 0; i < namespaces.length; i += 1) {
             if (namespaces[i] === 'translations' || namespaces[i].indexOf('local-') === 0) {
               return '/assets/{{ns}}/{{lng}}.json';
             }
           }
           return '/node_modules/{{ns}}/assets/translations/{{lng}}.json';
-        }.bind(this)
-      }
+        },
+      },
     }, options);
 
     this.proxy = i18next;
@@ -57,19 +58,22 @@ export default class GrainTranslate {
       .use(IntlPostProcessor)
       .init(this.proxyOptions);
 
-    window.grainTranslate = this;
+    window.Grain.translate = this;
   }
 
   get language() {
     return this.proxy.language || this.proxyOptions.fallbackLng;
   }
 
-  changeLanguage(lng) {
-    this.proxy.changeLanguage(lng);
+  set language(language) {
+    this.proxy.changeLanguage(language);
   }
 
-  loadNamespaces(namespaces) {
-    this.proxy.loadNamespaces(namespaces);
+  loadLanguages(languages, callback) {
+    this.proxy.loadLanguages(languages, callback);
   }
 
+  loadNamespaces(namespaces, callback) {
+    this.proxy.loadNamespaces(namespaces, callback);
+  }
 }
