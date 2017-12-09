@@ -26,7 +26,7 @@ const IntlPostProcessor = {
  * });
  *
  */ // eslint-disable-next-line no-unused-vars
-class GrainTranslate {
+export default class GrainTranslate {
   constructor(options) {
     if (window.Grain.translate) {
       return window.Grain.translate;
